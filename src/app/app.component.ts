@@ -16,22 +16,23 @@ export class AppComponent {
   prompt = '';
   loading = signal(false);
   error = signal<string | null>(null);
-  reply = signal('');
-
-  constructor(private readonly llama: LlamaService) {}
+  constructor(public readonly llama: LlamaService) {}
 
   async send() {
     if (!this.prompt.trim()) return;
     this.loading.set(true);
     this.error.set(null);
-    this.reply.set('');
     try {
-      const res = await this.llama.chat(this.prompt);
-      this.reply.set(res);
+      await this.llama.chat(this.prompt);
+      this.prompt = '';
     } catch (e: any) {
       this.error.set(e?.message ?? 'Erro ao conectar no Ollama');
     } finally {
       this.loading.set(false);
     }
+  }
+
+  reset() {
+    this.llama.reset();
   }
 }

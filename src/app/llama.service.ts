@@ -1,9 +1,10 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
 type GenReq = { model: string; prompt: string; stream?: boolean };
 type GenRes = { response?: string };
+type Message = { role: string; content: string };
 
 @Injectable({ providedIn: 'root' })
 export class LlamaService {
@@ -16,7 +17,28 @@ private readonly baseUrl = 'http://localhost:11434/api';
     'Responda sempre descrevendo cenários, NPCs e consequências das ações ' +
     'do jogador de forma envolvente.';
 
-  constructor(private http: HttpClient) {}
+  private readonly storageKey = 'rpg-ia-messages';
+
+  messages = signal<Message[]>([
+    { role: 'system', content: this.narratorPrompt },
+  ]);
+
+  constructor(private http: HttpClient) {
+    const saved =
+      typeof localStorage !== 'undefined'
+        ? localStorage.getItem(this.storageKey)
+        : null;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          this.messages.set(parsed);
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+  }
 
   setModel(name: string) { this.model = name; }
 
@@ -40,22 +62,42 @@ private readonly baseUrl = 'http://localhost:11434/api';
 
   // Se quiser manter chat também:
   async chat(prompt: string): Promise<string> {
+    this.messages.update((msgs) => [
+      ...msgs,
+      { role: 'user', content: prompt },
+    ]);
+    this.save();
+
     const body = {
       model: this.model,
-      messages: [
-        { role: 'system', content: this.narratorPrompt },
-        { role: 'user', content: prompt },
-      ],
+      messages: this.messages(),
       stream: false,
     };
     try {
       const res: any = await firstValueFrom(
         this.http.post(`${this.baseUrl}/chat`, body)
       );
-      return res?.message?.content ?? '';
+      const content = res?.message?.content ?? '';
+      this.messages.update((msgs) => [
+        ...msgs,
+        { role: 'assistant', content },
+      ]);
+      this.save();
+      return content;
     } catch (e: any) {
       const msg = e?.error?.error || e?.message || 'Erro 500 no Ollama';
       throw new Error(msg);
+    }
+  }
+
+  reset() {
+    this.messages.set([{ role: 'system', content: this.narratorPrompt }]);
+    this.save();
+  }
+
+  private save() {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(this.storageKey, JSON.stringify(this.messages()));
     }
   }
 }
