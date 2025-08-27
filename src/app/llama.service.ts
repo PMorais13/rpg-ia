@@ -14,8 +14,9 @@ private readonly baseUrl = 'http://localhost:11434/api';
 
   private readonly narratorPrompt =
     'Você é o narrador de uma campanha de RPG. ' +
-    'Responda sempre descrevendo cenários, NPCs e consequências das ações ' +
-    'do jogador de forma envolvente.';
+    'Agora eu, como narrador, decidirei o rumo da campanha e apresentarei as próximas ações com base no que aconteceu. ' +
+    'Preparem-se para o que vem a seguir e respondam conforme as situações se desenrolarem. ' +
+    'Responda sempre descrevendo cenários, NPCs e consequências das ações do jogador de forma envolvente.';
 
   private readonly storageKey = 'rpg-ia-messages';
 
