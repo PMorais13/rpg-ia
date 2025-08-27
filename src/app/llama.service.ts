@@ -11,12 +11,21 @@ private readonly baseUrl = 'http://localhost:11434/api';
   // coloque aqui o nome EXATO que aparece em /api/tags
   private model = 'mistral:7b'; // ajuste conforme o seu
 
+  private readonly narratorPrompt =
+    'Você é o narrador de uma campanha de RPG. ' +
+    'Responda sempre descrevendo cenários, NPCs e consequências das ações ' +
+    'do jogador de forma envolvente.';
+
   constructor(private http: HttpClient) {}
 
   setModel(name: string) { this.model = name; }
 
   async generate(prompt: string): Promise<string> {
-    const body: GenReq = { model: this.model, prompt, stream: false };
+    const body: GenReq = {
+      model: this.model,
+      prompt: `${this.narratorPrompt}\n${prompt}`,
+      stream: false,
+    };
     try {
       const res = await firstValueFrom(
         this.http.post<GenRes>(`${this.baseUrl}/generate`, body)
@@ -31,7 +40,14 @@ private readonly baseUrl = 'http://localhost:11434/api';
 
   // Se quiser manter chat também:
   async chat(prompt: string): Promise<string> {
-    const body = { model: this.model, messages: [{ role: 'user', content: prompt }], stream: false };
+    const body = {
+      model: this.model,
+      messages: [
+        { role: 'system', content: this.narratorPrompt },
+        { role: 'user', content: prompt },
+      ],
+      stream: false,
+    };
     try {
       const res: any = await firstValueFrom(
         this.http.post(`${this.baseUrl}/chat`, body)
