@@ -91,6 +91,17 @@ private readonly baseUrl = 'http://localhost:11434/api';
     }
   }
 
+  async startScenario(): Promise<void> {
+    const content = await this.generate(
+      'Crie um cenário inicial de uma aventura e pergunte ao jogador o que deseja fazer.'
+    );
+    this.messages.update((msgs) => [
+      ...msgs,
+      { role: 'assistant', content },
+    ]);
+    this.save();
+  }
+
   reset() {
     this.messages.set([{ role: 'system', content: this.narratorPrompt }]);
     this.save();
