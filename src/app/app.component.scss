@@ -8,6 +8,23 @@
   gap: 12px;
 }
 
+.history {
+  display: grid;
+  gap: 8px;
+
+  .bubble {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: #f3f4f6;
+    white-space: pre-wrap;
+  }
+
+  .user {
+    text-align: right;
+  }
+}
+
 .row {
   display: grid;
   gap: 8px;
@@ -38,4 +55,11 @@
 
 .status { font-size: 14px; color: #374151; }
 .error  { color: #b91c1c; }
-.reply  { white-space: pre-wrap; }
+.actions {
+  display: flex;
+  gap: 8px;
+
+  button[type='button'] {
+    background: #6b7280;
+  }
+}

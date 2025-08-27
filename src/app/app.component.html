@@ -1,6 +1,15 @@
 <div class="chat-card">
   <h2>LLaMA Local</h2>
 
+  <div class="history">
+    <ng-container *ngFor="let m of llama.messages()">
+      <div *ngIf="m.role !== 'system'" [ngClass]="m.role">
+        <strong>{{ m.role === 'user' ? 'Você' : 'Narrador' }}:</strong>
+        <pre class="bubble">{{ m.content }}</pre>
+      </div>
+    </ng-container>
+  </div>
+
   <form (ngSubmit)="send()" class="row">
     <textarea
       [(ngModel)]="prompt"
@@ -9,14 +18,12 @@
       rows="4"
     ></textarea>
 
-    <button type="submit" [disabled]="loading()">Enviar</button>
+    <div class="actions">
+      <button type="submit" [disabled]="loading()">Enviar</button>
+      <button type="button" (click)="reset()">Resetar</button>
+    </div>
   </form>
 
   <div class="status" *ngIf="loading()">Gerando resposta...</div>
   <div class="error" *ngIf="error()">{{ error() }}</div>
-
-  <div class="reply" *ngIf="reply()">
-    <h3>Resposta</h3>
-    <pre>{{ reply() }}</pre>
-  </div>
 </div>
