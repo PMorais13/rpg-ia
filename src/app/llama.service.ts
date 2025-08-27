@@ -9,7 +9,7 @@ type GenRes = { response?: string };
 export class LlamaService {
 private readonly baseUrl = 'http://localhost:11434/api';
   // coloque aqui o nome EXATO que aparece em /api/tags
-  private model = 'mistral:7b'; // ajuste conforme o seu
+  private model = 'qwen2.5:1.5b'; // ajuste conforme o seu
 
   private readonly narratorPrompt =
     'Você é o narrador de uma campanha de RPG. ' +
