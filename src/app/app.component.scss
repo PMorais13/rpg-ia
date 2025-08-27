@@ -1,0 +1,41 @@
+.chat-card {
+  max-width: 720px;
+  margin: 24px auto;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  display: grid;
+  gap: 12px;
+}
+
+.row {
+  display: grid;
+  gap: 8px;
+
+  textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    resize: vertical;
+  }
+
+  button {
+    justify-self: start;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 8px;
+    background: #111827;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  button[disabled] {
+    opacity: .6;
+    cursor: not-allowed;
+  }
+}
+
+.status { font-size: 14px; color: #374151; }
+.error  { color: #b91c1c; }
+.reply  { white-space: pre-wrap; }

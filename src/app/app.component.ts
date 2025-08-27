@@ -1,12 +1,37 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+import { LlamaService } from './llama.service';
+
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone: true,
+  imports: [CommonModule, FormsModule, HttpClientModule],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  title = 'rpg-ia';
+  prompt = '';
+  loading = signal(false);
+  error = signal<string | null>(null);
+  reply = signal('');
+
+  constructor(private readonly llama: LlamaService) {}
+
+  async send() {
+    if (!this.prompt.trim()) return;
+    this.loading.set(true);
+    this.error.set(null);
+    this.reply.set('');
+    try {
+      const res = await this.llama.chat(this.prompt);
+      this.reply.set(res);
+    } catch (e: any) {
+      this.error.set(e?.message ?? 'Erro ao conectar no Ollama');
+    } finally {
+      this.loading.set(false);
+    }
+  }
 }
